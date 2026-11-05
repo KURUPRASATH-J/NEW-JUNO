@@ -1,8 +1,9 @@
-FROM python:3.9-slim
+
+FROM python:3.11-slim
 
 WORKDIR /code
 
-# Install system dependencies including tesseract for OCR
+# System dependencies for OCR and PDF processing
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     tesseract-ocr-eng \
@@ -10,30 +11,22 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Create cache directories with proper permissions
-RUN mkdir -p /code/.cache/huggingface && \
-    mkdir -p /code/.cache/torch && \
-    chmod -R 777 /code/.cache
-
-# Set environment variables for cache directories
-ENV TRANSFORMERS_CACHE=/code/.cache/huggingface
+# Hugging Face and model cache configuration
 ENV HF_HOME=/code/.cache/huggingface
+ENV HF_HUB_CACHE=/code/.cache/huggingface/hub
 ENV TORCH_HOME=/code/.cache/torch
-ENV HF_HUB_CACHE=/code/.cache/huggingface
-ENV SENTENCE_TRANSFORMERS_HOME=/code/.cache/sentence_transformers
-
-# Copy requirements and install Python dependencies
-COPY ./requirements.txt /code/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-
-# Copy application files
-COPY . /code
-
-# Expose port
-EXPOSE 7860
-
-# Set environment variable for Hugging Face Spaces
 ENV PYTHONPATH=/code
+ENV PYTHONUNBUFFERED=1
 
-# Command to run the application from backend/
-CMD ["python", "backend/app.py"]
+# Install Python dependencies
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir gunicorn
+
+# Copy application source
+COPY . .
+
+# Start Flask using Gunicorn
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 1 --timeout 300 --chdir backend app:app"]

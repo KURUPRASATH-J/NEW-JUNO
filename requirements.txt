@@ -22,3 +22,4 @@ pdf2image
 transformers
 torch
 bcrypt
+gunicorn
