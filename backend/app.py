@@ -36,12 +36,12 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted, GoogleAPIError
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 # MODIFIED: LangChain imports updated for compatibility
 from langchain_community.vectorstores import Chroma
 # NEWLY MODIFIED: Use the dedicated langchain-huggingface package for embeddings
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.schema import Document
+from langchain_core.documents import Document
 import PyPDF2
 import io
 from typing import List, Dict, Any
