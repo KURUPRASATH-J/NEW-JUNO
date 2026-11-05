@@ -801,5 +801,11 @@ if __name__ == '__main__':
     logging.info("🌟 Powered by Juno AI Prompts System")
     logging.info("🧠 Enhanced with Name Memory (Streaming-Safe)")
     logging.info("🎭 AI Persona System Active")
+
     port = int(os.environ.get("PORT", 7860))
-    app.run(debug=False, host='0.0.0.0', port=port)
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
